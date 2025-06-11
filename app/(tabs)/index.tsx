@@ -1,75 +1,85 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
+  const [input, setInput] = useState('');
+
+  const handlePress = (val: string) => {
+    if (val === '=') {
+      try {
+        setInput(eval(input).toString());
+      } catch {
+        setInput('Erro');
+      }
+    } else if (val === 'C') {
+      setInput('');
+    } else {
+      setInput((prev) => prev + val);
+    }
+  };
+
+  const buttons = [
+    ['7', '8', '9', '/'],
+    ['4', '5', '6', '*'],
+    ['1', '2', '3', '-'],
+    ['0', '.', '=', '+'],
+    ['C']
+  ];
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <View style={styles.display}>
+        <Text style={styles.displayText}>{input}</Text>
+      </View>
+      <View style={styles.buttons}>
+        {buttons.map((row, i) => (
+          <View key={i} style={styles.row}>
+            {row.map((btn) => (
+              <TouchableOpacity key={btn} style={styles.button} onPress={() => handlePress(btn)}>
+                <Text style={styles.buttonText}>{btn}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'flex-end',
+  },
+  display: {
+    minHeight: 100,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    padding: 20,
+  },
+  displayText: {
+    fontSize: 48,
+    color: '#fff',
+  },
+  buttons: {
+    padding: 10,
+  },
+  row: {
     flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+  },
+  button: {
+    backgroundColor: '#333',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  buttonText: {
+    fontSize: 28,
+    color: '#fff',
   },
 });
